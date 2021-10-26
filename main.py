@@ -12,10 +12,10 @@ class Main:
 
     def run(self):
         readFile()
-        fileName = "p1.txt"
-        exceptionMessage = ""
+        file_name = "p1.txt"
+        exception_message = ""
 
-        with open(fileName, 'r') as file:
+        with open(file_name, 'r') as file:
             for lineCounter, line in enumerate(file, start=1):
                 tokens = self.scanner.tokenize(line.rstrip())
                 extra = ''
@@ -25,14 +25,14 @@ class Main:
                             continue
                         self.pif.add(tokens[i], (-1, -1))
                     elif self.scanner.isIdentifier(tokens[i]):
-                        id = self.st.add(tokens[i])
-                        self.pif.add("id", id)
+                        identif = self.st.add(tokens[i])
+                        self.pif.add("id", identif)
                     elif self.scanner.isConstant(tokens[i]):
                         const = self.st.add(extra + tokens[i])
                         extra = ''
                         self.pif.add("const", const)
                     else:
-                        exceptionMessage += 'Lexical error at token ' + tokens[i] + ', at line ' + str(
+                        exception_message += 'Lexical error at token ' + tokens[i] + ', at line ' + str(
                             lineCounter) + "\n"
 
         with open('st.out', 'w') as writer:
@@ -41,10 +41,10 @@ class Main:
         with open('pif.out', 'w') as writer:
             writer.write(str(self.pif))
 
-        if exceptionMessage == '':
+        if exception_message == '':
             print("Lexically correct")
         else:
-            print(exceptionMessage)
+            print(exception_message)
 
 
 main = Main()

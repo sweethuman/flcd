@@ -14,7 +14,7 @@ class HashTable:
         """
         Hash of the key to find approximate position in HashTable
         """
-        key_sum = sum(ord(chr) - ord('0') for chr in key)
+        key_sum = sum(ord(char) - ord('0') for char in key)
         return key_sum % self.__size
 
     def add(self, key) -> Tuple[int, int]:

@@ -9,7 +9,8 @@ class Scanner:
     Parses a file into it's respective tokens.
     """
 
-    def getStringToken(self, line: str, index: int) -> Tuple[str, int]:
+    @staticmethod
+    def getStringToken(line: str, index: int) -> Tuple[str, int]:
         """
         Gets the string token from the line at the given index. Index has to be placed at the quote, not after it.
         :param line: Line to process
@@ -27,7 +28,8 @@ class Scanner:
 
         return token, index
 
-    def isPartOfOperator(self, char) -> bool:
+    @staticmethod
+    def isPartOfOperator(char) -> bool:
         """
         Checks if this specific character is part of an operator. Used to start the check for the full operator
         """
@@ -86,15 +88,18 @@ class Scanner:
             tokens.append(token)
         return tokens
 
-    def isIdentifier(self, token: str) -> bool:
+    @staticmethod
+    def isIdentifier(token: str) -> bool:
         """
         Check if a token is an identifier
         """
         return re.match(r'^[a-z]([a-zA-Z]|[0-9])*$', token) is not None
 
-    def isConstant(self, token: str) -> bool:
+    @staticmethod
+    def isConstant(token: str) -> bool:
         """
-        Check if a token is a constant. Constant means it's either a positive or negative number, float or a string with the quotes
+        Check if a token is a constant. Constant means it's either a positive or negative number, float or a string
+        with the quotes
         """
         return re.match(r'^(0|([+-]?[1-9][0-9]*)|([+-]?[0-9]\.[0-9]+))$|^\".\"$|^\".*\"$', token) is not None
     #

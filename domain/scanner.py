@@ -79,7 +79,14 @@ class Scanner:
         index = 0
         tokens = []
         while index < len(line):
-            if self.isPartOfOperator(line[index]):
+            regComp = re.match(r'^[\+\-][0-9](\.?[0-9]+)?', line[index:])
+
+            if regComp is not None:
+                if token:
+                    tokens.append(token)
+                tokens.append(regComp[0])
+                index += len(regComp[0])
+            elif self.isPartOfOperator(line[index]):
                 if token:
                     tokens.append(token)
                 token, index = self.getOperatorToken(line, index)

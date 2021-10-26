@@ -1,6 +1,6 @@
 int a,b,c,max,min
 a = 2
-b = 1
+b = -01.3
 c = 3
 
 

@@ -29,6 +29,25 @@ class Scanner:
         return token, index
 
     @staticmethod
+    def getCharToken(line: str, index: int) -> Tuple[str, int]:
+        """
+        Gets the string token from the line at the given index. Index has to be placed at the quote, not after it.
+        :param line: Line to process
+        :param index: Current position in the line
+        :return: The extracted token and the new position in the line
+        """
+        token = ''
+        quotes = 0
+
+        while index < len(line) and quotes < 2:
+            if line[index] == "'":
+                quotes += 1
+            token += line[index]
+            index += 1
+
+        return token, index
+
+    @staticmethod
     def isPartOfOperator(char) -> bool:
         """
         Checks if this specific character is part of an operator. Used to start the check for the full operator
@@ -65,21 +84,28 @@ class Scanner:
                     tokens.append(token)
                 token, index = self.getOperatorToken(line, index)
                 tokens.append(token)
-                token = ''  # reset token
+                token = ''
 
             elif line[index] == '"':
                 if token:
                     tokens.append(token)
                 token, index = self.getStringToken(line, index)
                 tokens.append(token)
-                token = ''  # reset token
+                token = ''
+
+            elif line[index] == "'":
+                if token:
+                    tokens.append(token)
+                token, index = self.getCharToken(line, index)
+                tokens.append(token)
+                token = ''
 
             elif line[index] in separators:
                 if token:
                     tokens.append(token)
                 token, index = line[index], index + 1
                 tokens.append(token)
-                token = ''  # reset token
+                token = ''
 
             else:
                 token += line[index]
@@ -101,5 +127,5 @@ class Scanner:
         Check if a token is a constant. Constant means it's either a positive or negative number, float or a string
         with the quotes
         """
-        return re.match(r'^(0|([+-]?[1-9][0-9]*)|([+-]?[0-9]\.[0-9]+))$|^\".\"$|^\".*\"$', token) is not None
+        return re.match(r'^(0|([+-]?[1-9][0-9]*)|([+-]?[0-9]\.[0-9]+))$|^\".\"$|^\".*\"$|^\'[a-zA-Z0-9]\'$', token) is not None
     #

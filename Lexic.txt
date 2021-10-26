@@ -25,7 +25,7 @@ Language Specification
             iii. Character:
                 char := 'letter'|'digit'
             iv. String:
-                string := character{character}
+                string := """{character}"""
             v. Boolean:
                 boolean := “true” | “false”
 true := “1”

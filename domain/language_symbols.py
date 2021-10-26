@@ -15,7 +15,7 @@ def readFile():
             if separator == "<newline>":
                 separator = "\n"
             separators.append(separator)
-        for _ in range(18):
+        for _ in range(17):
             operators.append(f.readline().strip())
         for _ in range(17):
             reservedWords.append(f.readline().strip())

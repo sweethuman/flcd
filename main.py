@@ -10,9 +10,12 @@ class Main:
         self.pif = ProgramInternalForm()
         self.scanner = Scanner()
 
-    def run(self):
+    def run(self, file_name):
+        """
+        Parses a file
+        :param file_name: File to parse
+        """
         readFile()
-        file_name = "p1.txt"
         exception_message = ""
 
         with open(file_name, 'r') as file:
@@ -47,5 +50,6 @@ class Main:
             print(exception_message)
 
 
-main = Main()
-main.run()
+if __name__ == "__main__":
+    main = Main()
+    main.run("p1.txt")

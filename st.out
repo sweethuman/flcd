@@ -1,5 +1,5 @@
 Symbol Table (kept as a Hash Table using Lists)
-0->['min']
+0->['min', '1.1']
 1->[]
 2->['max', '2']
 3->['3']

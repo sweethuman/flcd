@@ -5,6 +5,7 @@ class HashTable:
     """
     Data type of storing keys efficiently. They are stored as lists in lists. The size of the hash table decreases the
     number of possible conflicts and increases performance at the cost of increased memory.
+    Position (-1,-1) means an invalid position and that the element doesn't exist.
     """
 
     def __init__(self, size):

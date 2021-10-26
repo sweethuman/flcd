@@ -3,7 +3,8 @@ from typing import Tuple
 
 class HashTable:
     """
-    Data type of storing keys efficiently.
+    Data type of storing keys efficiently. They are stored as lists in lists. The size of the hash table decreases the
+    number of possible conflicts and increases performance at the cost of increased memory.
     """
 
     def __init__(self, size):
@@ -24,7 +25,12 @@ class HashTable:
         """
         if self.contains(key):
             return self.getPosition(key)
-        self.__items[self.hash(key)].append(key)
+        # replaces an empty position or adds to the list
+        try:
+            nonePos = self.__items[self.hash(key)].index(None)
+            self.__items[self.hash(key)][nonePos] = key
+        except ValueError:
+            self.__items[self.hash(key)].append(key)
         return self.getPosition(key)
 
     def contains(self, key) -> bool:
@@ -41,6 +47,8 @@ class HashTable:
         pos = self.getPosition(key)
         if pos[0] == -1:
             return
+        # does not actually remove it forces items to change position
+        # when a new key is added and a position is with none it will replace it so it won't consume new memory
         self.__items[pos[0]][pos[1]] = None
 
     def __str__(self) -> str:
@@ -54,15 +62,11 @@ class HashTable:
         Calculates the position of the given key, if key is not found, it return (-1, -1) position
         """
         list_position = self.hash(key)
-        list_index = 0
-        for item in self.__items[list_position]:
-            if item != key:
-                list_index += 1
-            else:
-                break
-        if list_index >= len(self.__items[list_position]):
+        try:
+            list_index = self.__items[list_position].index(key)
+            return list_position, list_index
+        except ValueError:
             return -1, -1
-        return list_position, list_index
 
     def getKeyByPosition(self, position: Tuple[int, int]):
         """

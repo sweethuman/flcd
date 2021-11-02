@@ -1,7 +1,7 @@
 from typing import List, Dict, Tuple
 
 
-class FiniteAutomata:
+class FiniteAutomaton:
     states: List[str]
     alphabet: List[str]
     transitions: Dict[Tuple[str, str], List[str]]
@@ -44,7 +44,7 @@ class FiniteAutomata:
                     initial_state = tokens[1]
                 elif tokens[0] == "finalState":
                     final_states = tokens[1:]
-        return FiniteAutomata(states, alphabet, transitions, initial_state, final_states)
+        return FiniteAutomaton(states, alphabet, transitions, initial_state, final_states)
 
     def printStates(self):
         print("Set of states: ", self.states)
@@ -80,7 +80,7 @@ class FiniteAutomata:
 
 
 if __name__ == "__main__":
-    automata = FiniteAutomata.readFromFile("fa_test.in")
+    automata = FiniteAutomaton.readFromFile("fa_test.in")
     automata.printStates()
     automata.printAlphabet()
     automata.printInitialState()
@@ -88,3 +88,4 @@ if __name__ == "__main__":
     automata.printTransitions()
     print("12345", automata.checkSequence("12345"))
     print("123c45", automata.checkSequence("123c45"))
+    print("012345", automata.checkSequence("123c45"))

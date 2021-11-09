@@ -64,6 +64,8 @@ class FiniteAutomaton:
             print("delta({0}, {1}) = {2}".format(t[0], t[1], self.transitions[t]))
 
     def checkSequence(self, sequence) -> bool:
+        if not self.isDfa():
+            raise ArithmeticError("FiniteAutomaton is not a DFA")
         current_state = self.initial_state
 
         while sequence != "":
@@ -77,6 +79,12 @@ class FiniteAutomaton:
                 return False
 
         return current_state in self.final_states
+
+    def isDfa(self) -> bool:
+        for k in self.transitions.keys():
+            if len(self.transitions[k]) > 1:
+                return False
+        return True
 
 
 if __name__ == "__main__":

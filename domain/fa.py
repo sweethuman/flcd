@@ -96,4 +96,4 @@ if __name__ == "__main__":
     automata.printTransitions()
     print("12345", automata.checkSequence("12345"))
     print("123c45", automata.checkSequence("123c45"))
-    print("012345", automata.checkSequence("123c45"))
+    print("012345", automata.checkSequence("012345"))

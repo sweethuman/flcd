@@ -32,3 +32,15 @@ class Grammar:
                 # if no error add to productions
                 productions[symbol] = rules
             return Grammar(non_terminals, terminals, productions, starting_symbol)
+
+    def getNonTerminals(self):
+        return self.non_terminals
+
+    def getTerminals(self):
+        return self.terminals
+
+    def getProductions(self):
+        return self.productions
+
+    def getStartingSymbol(self):
+        return self.starting_symbol

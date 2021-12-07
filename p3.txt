@@ -1,12 +1,10 @@
 int sum,max,min,n,i,input
-
 read n
 n = n - 1
 read input
 max = input
 min = input
 sum = input
-
 i = 0
 while i < n:
 	read input
@@ -16,7 +14,6 @@ while i < n:
 		 min = input
 	sum = sum + input
 	i = i + 1
-
 print "sum ", sum
 print "max ", max
 print "min ", min

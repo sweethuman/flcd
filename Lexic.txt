@@ -45,7 +45,7 @@ false := “0”
             simple_statement := assignment | io_statement
             assignment := identifier “=” expression | identifier”++” | identifier”--”
             expression := term | expression operation term
-            term := identifier | nr
+            term := identifier | constant
             io_statement := “read” | “write” | “print” “ “ identifier [{“,”[“ “] identifier}]
             struct_statement := if_statement | while_statement | for_statement
             if_statement := “if” condition “:\n\tab” statement [{“\n\tab”statement}] ”\n” “else:\n\tab” statement [{“\n\tab”statement}]

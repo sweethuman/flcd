@@ -1,6 +1,8 @@
 from domain.pif import ProgramInternalForm
 from domain.scanner import *
 from domain.symbol_table import SymbolTable
+from parser.grammar import Grammar
+from parser.parser import ParserRecursiveDescent
 
 
 class Main:
@@ -29,14 +31,15 @@ class Main:
                         self.pif.add(tokens[i], (-1, -1))
                     elif self.scanner.isIdentifier(tokens[i]):
                         identif = self.st.add(tokens[i])
-                        self.pif.add("id", identif)
+                        self.pif.add("identifier", identif)
                     elif self.scanner.isConstant(tokens[i]):
                         const = self.st.add(extra + tokens[i])
                         extra = ''
-                        self.pif.add("const", const)
+                        self.pif.add("constant", const)
                     else:
                         exception_message += 'Lexical error at token ' + tokens[i] + ', at line ' + str(
                             lineCounter) + "\n"
+                self.pif.add("\n", (-1, -1))
 
         with open('st.out', 'w') as writer:
             writer.write(str(self.st))
@@ -53,3 +56,11 @@ class Main:
 if __name__ == "__main__":
     main = Main()
     main.run("p1.txt")
+    grammar = Grammar.parseFile("g2.txt")
+    sequence = []
+    for e in main.pif.get_content():
+        sequence.append(str(e[0]))
+    parser = ParserRecursiveDescent(grammar)
+    parser.run(sequence)
+    parser.parse_tree(parser.work)
+    parser.write_tree_to_file("g2.out")

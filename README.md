@@ -27,3 +27,5 @@ final state = "finalState",{separator,letter}
 program = states,newline,alphabet,newline,transitions,newline,
           initial state,newline,final state
 ```
+
+g2.txt is missing the `||` operator because it conflicts with the `|` sign in grammar parsing. will fix later

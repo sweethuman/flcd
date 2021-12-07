@@ -2,15 +2,12 @@ int a,b,c,max,min
 a = 2
 b = 1.1
 c = 3
-
-
 if a > b:
 	max = a
 	min = b
 else
 	max = b
 	min = a
-
 if max < c:
 	max = c
 if min > c:

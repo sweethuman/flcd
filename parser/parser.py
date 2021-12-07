@@ -1,0 +1,209 @@
+from typing import Literal
+
+from parser.grammar import Grammar
+from domain.language_symbols import symbols
+
+
+class ParserRecursiveDescent:
+    grammar: Grammar
+    state: Literal["q", "b", "f", "e"]
+
+    def __init__(self, grammar):
+        self.grammar = grammar
+        self.work = []
+        self.input = []
+        self.state = "q"
+        self.index = 0
+        self.iteration = 0
+        self.symbols = symbols
+        self.tree = []
+        self.words = []
+        self.debug = False
+
+    def expand(self):
+        # when top of input non terminal
+        non_terminal = self.input.pop(0)
+        self.work.append((non_terminal, 0))
+
+        # this probably shouldn't always be 0 but we will see, kinda fucked
+        a = list(self.grammar.getProductions()[non_terminal])[0]
+
+        self.input = a.split(" ") + self.input
+        if self.debug:
+            self.print_parser_step("expand")
+
+    def advance(self):
+        # when top of input terminal
+        self.work.append(self.input.pop(0))
+        self.index += 1
+        if self.debug:
+            self.print_parser_step("advance")
+
+    def momentary_insuccess(self):
+        # when else fails set state to back
+        self.state = "b"
+        if self.debug:
+            self.print_parser_step("momentary_insuccess")
+
+    def back(self):
+        # when state is "b" we restore the input
+        self.input = [self.work.pop()] + self.input
+        self.index -= 1
+        if self.debug:
+            self.print_parser_step("back")
+
+    def success(self):
+        # when conditions are met set state to success
+        self.state = "f"
+        self.index += 1
+        if self.debug:
+            self.print_parser_step("success")
+
+    def another_try(self):
+        if self.index == 0 and self.work[len(self.work) - 1][0] == self.grammar.getStartingSymbol():
+            self.state = "e"
+            return
+
+        (non_terminal, last_prod_index) = self.work.pop()
+        productions = self.grammar.getProductions()[non_terminal]
+
+        if len(productions) - 1 > last_prod_index:
+            self.state = "q"
+            self.work.append((non_terminal, last_prod_index + 1))
+
+            # remove previous production and add current production
+            for i in productions[last_prod_index]:
+                self.input.pop(0)
+            aux = productions[last_prod_index + 1]
+            self.input = aux + self.input
+
+        else:
+            for i in productions[last_prod_index]:
+                self.input.pop(0)
+            self.input = [non_terminal] + self.input
+
+        if self.debug:
+            self.print_parser_step("another_try")
+
+    def check_word_length(self, w):
+        if len(w) > self.index:
+            return self.input[0] == w[self.index]
+        return False
+
+    def run(self, w):
+        self.words = w
+        self.state = "q"
+        self.index = 0
+        self.work = []
+        self.input = [self.grammar.getStartingSymbol()]
+        while self.state != "f" and self.state != "e":
+            if self.state == "q":
+                if len(self.input) == 0 and self.index == len(self.words):
+                    self.success()
+                else:
+                    if self.input[0] in self.grammar.getNonTerminals():
+                        self.expand()
+                    elif self.input[0] in self.grammar.getTerminals() and self.check_word_length(self.words):
+                        self.advance()
+                    else:
+                        self.momentary_insuccess()
+            elif self.state == "b":
+                if self.work[len(self.work) - 1] in self.grammar.getTerminals():
+                    self.back()
+                # anotherTry
+                else:
+                    self.another_try()
+
+        if self.state == "e":
+            print("ERROR")
+        else:
+            print("Sequence accepted")
+            print(self.work, self.input, self.index)
+
+    def print_parser_step(self, step):
+        print("~~~~~~~~~~~~")
+        print(step)
+        print("iteration: ", self.iteration)
+        self.iteration += 1
+        print(self.state)
+        print(self.index)
+        string = ""
+        for i in self.work:
+            if type(i) != tuple:
+                string += "\"" + list(self.tokenCodes.keys())[list(self.tokenCodes.values()).index(int(i))] + "\" , "
+            else:
+                string += str(i) + ", "
+        print(string)
+        string = ""
+        for i in self.input:
+            try:
+                string += "\"" + list(self.tokenCodes.keys())[list(self.tokenCodes.values()).index(int(i))] + "\" , "
+            except:
+                string += str(i) + ", "
+        print(string)
+        string = ""
+        for i in self.word:
+            if type(i) != tuple:
+                string += "\"" + list(self.tokenCodes.keys())[list(self.tokenCodes.values()).index(int(i))] + "\" , "
+            else:
+                string += str(i) + ", "
+        print(string)
+
+    def parse_tree(self, work):
+        father = -1
+
+        for index in range(0, len(work)):
+            if type(work[index]) == tuple:
+                self.tree.append(Node(work[index][0]))
+                self.tree[index].production = work[index][1]
+            else:
+                self.tree.append(Node(work[index]))
+
+        for index in range(0, len(work)):
+            if type(work[index]) == tuple:
+                self.tree[index].father = father
+                father = index
+                lengthProduction = len(self.grammar.getProductions()[work[index][0]][work[index][1]])
+                vectorIndex = []
+                for i in range(1, lengthProduction + 1):
+                    vectorIndex.append(index + i)
+                for i in range(0, lengthProduction):
+                    if self.tree[vectorIndex[i]].production != -1:  # if it is a nonTerminal, compute offset
+                        offset = self.getProductionOffset(vectorIndex[i])
+                        for j in range(i + 1, lengthProduction):
+                            vectorIndex[j] += offset
+                for i in range(0, lengthProduction - 1):
+                    self.tree[vectorIndex[i]].sibling = vectorIndex[i + 1]
+            else:
+                self.tree[index].father = father
+                father = -1
+
+    def get_production_offset(self, index):
+        production = self.grammar.getProductions()[self.work[index][0]][self.work[index][1]]
+        lengthOfProduction = len(production)
+        offset = lengthOfProduction
+        for i in range(1, lengthOfProduction + 1):
+            if type(self.work[index + i]) == tuple:
+                offset += self.get_production_offset(index + i)
+        return offset
+
+    def write_tree_to_file(self, filename):
+        file = open(filename, "w")
+        file.write("index | value | father | sibling\n")
+
+        for index in range(0, len(self.work)):
+            file.write(str(index) + " " + str(self.tree[index]) + "\n")
+            print(index, " ", str(self.tree[index]))
+
+        file.close()
+
+
+class Node:
+    def __init__(self, value):
+        self.father = -1
+        self.sibling = -1
+        self.value = value
+        self.production = -1
+
+    def __str__(self):
+        return str(self.value) + " " + str(self.father) + " " + str(self.sibling)

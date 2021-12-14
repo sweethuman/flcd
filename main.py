@@ -39,7 +39,7 @@ class Main:
                     else:
                         exception_message += 'Lexical error at token ' + tokens[i] + ', at line ' + str(
                             lineCounter) + "\n"
-                self.pif.add("\n", (-1, -1))
+                # self.pif.add("\n", (-1, -1))
 
         with open('st.out', 'w') as writer:
             writer.write(str(self.st))

@@ -1,25 +1,24 @@
-program statement_list optional_statement_list statement declaration type primary_type operation relation boolean_relation condition simple_statement assignment expression term io_statement struct_statement if_statement while_statement for_statement recursive_identifier recursive_tab_statement
-identifier constant ( ) [ ] { } ; : , <space> <tab> <newline> \tab \n + - * / % = < > <= >= == != ! && || ++ -- int bool float string char const if else return true false print call define read write while break for
+program decllist declaration type operation lidentifier structstmt arraydeclarations cmpdstmt stmtlist stmt ifstmt simplstmt expression term factor iostmt whilestmt condition relation assignstmt
+identifier constant begin ( ) do id [ ] { } ; : \  := <space> . , + - * / % = < <> > <= >= == != ! and array else for begin if number or read write string while xor int
 program
-program -> statement_list
-statement_list -> statement optional_statement_list
-optional_statement_list -> \n statement_list | \n
-statement -> declaration | simple_statement | struct_statement
-declaration -> type recursive_identifier
-recursive_identifier -> identifier , recursive_identifier | identifier
-type -> primary_type
-primary_type -> int | float | bool | string | char
-operation -> + | - | * | / | %
-relation -> < | <= | == | != | >= | > | &&
-boolean_relation -> &&
-condition -> ( expression relation expression ) | ( condition boolean_relation condition )
-simple_statement -> assignment | io_statement
-assignment -> identifier = expression | identifier ++ | identifier --
-expression -> term | expression operation term
+program -> begin cmpdstmt
+cmpdstmt -> { stmtlist }
+stmtlist -> stmt ; stmtlist | stmt ;
+stmt -> simplstmt | structstmt
+simplstmt -> declaration | assignstmt | iostmt
+structstmt -> ifstmt | whilestmt | cmpdstmt
+ifstmt -> if condition cmpdstmt else cmpdstmt
+whilestmt -> while condition do cmpdstmt
+condition ->  ( expression relation expression )
+relation -> < | <= | = | <> | >= | >
+decllist -> declaration
+declaration ->  type lidentifier
+type -> int | string
+lidentifier -> identifier | identifier , lidentifier
+arraydeclarations -> array [ constant ] : type
+assignstmt -> identifier = expression
+iostmt -> read ( identifier ) | write ( identifier )
+expression -> term
 term -> identifier | constant
-io_statement -> read | write | print recursive_identifier
-struct_statement -> if_statement | while_statement | for_statement
-recursive_tab_statement -> statement \n \tab recursive_tab_statement | statement
-if_statement -> if condition : \n \tab recursive_tab_statement
-while_statement -> while condition : \n \tab recursive_tab_statement
-for_statement -> for assignment ; condition ; assignment : \n \tab recursive_tab_statement
+factor -> ( expression ) | identifier
+operation -> + | - | * | \ | %

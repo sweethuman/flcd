@@ -55,3 +55,25 @@ false := “0”
             identifier ::= letter[{letter | digit}]
             letter ::= "A"|"B"|...|"Z"|"a"|"b"|...|"z"
             digit ::= "0"|"1"|...|"9"
+
+  identifier::=letter|letter{letter}{digit}
+        program::= "Begin" cmpdstmt
+        decllist ::= declaration | declaration ";" decllist
+        declaration ::= lidentifier ":" type
+        type::= "int"| "string"
+        lidentifier::= id| id ","  lidentifier;
+        arraydeclarations::="array" "[" nr "]" ":" type
+        cmpdstmt = "{" stmtlist "}"
+        stmtlist ::= stmt | stmt ";" stmtlist
+        stmt ::= simplstmt | structstmt
+        simplstmt ::= assignstmt | iostmt
+        assignstmt ::= identifier ":=" expression
+        expression ::= term |expression operation term
+        term ::= identifier | constant
+        factor ::= "(" expression ")" | identifier
+        iostmt ::= "read"  "(" identifier ")" | "write" "(" identifier ")"
+        structstmt ::= cmpdstmt | ifstmt | whilestmt
+        ifstmt ::= "if" condition stmt ["else" stmt]
+        whilestmt ::= "while" condition "do" stmt
+        condition ::=  "(" expression relation expression ")"
+        relation ::= "<" | "<=" | "=" | "<>" | ">=" | ">"

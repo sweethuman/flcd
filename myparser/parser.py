@@ -224,8 +224,8 @@ class ParserRecursiveDescent:
                         graph.edge(str(currnode.father), str(index), arrowhead="empty")
                 except StopIteration:
                     print("For " + str(index) + " " + str(node) + " indirect father not found.")
-            if node.sibling != -1:
-                graph.edge(str(index), str(node.sibling), arrowhead="invdot")
+            # if node.sibling != -1:
+            #     graph.edge(str(index), str(node.sibling), arrowhead="invdot")
             file.write(str(index) + " " + str(node) + "\n")
             print(index, " ", str(node))
         file.close()

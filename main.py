@@ -63,4 +63,4 @@ if __name__ == "__main__":
     parser = ParserRecursiveDescent(grammar)
     parser.run(sequence)
     parser.parse_tree(parser.work)
-    parser.write_tree_to_file("g2.out")
+    parser.write_tree_to_file("g2")

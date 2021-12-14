@@ -220,7 +220,7 @@ class ParserRecursiveDescent:
                     while currnode.father == -1:
                         currnode = next(x for x in self.tree if x.sibling == currnode.index)
                     if currnode.father != -1 and currnode != node:
-                        source += (str(currnode.father) + " -> " + str(index) + "\n")
+                        source += (str(currnode.father) + " -> " + str(index)+ " [arrowhead=\"empty\"]" + "\n")
                 except StopIteration:
                     print("For " + str(index) + " " + str(node) + " indirect father not found.")
             if node.sibling != -1:

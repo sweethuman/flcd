@@ -1,8 +1,8 @@
 from domain.pif import ProgramInternalForm
 from domain.scanner import *
 from domain.symbol_table import SymbolTable
-from parser.grammar import Grammar
-from parser.parser import ParserRecursiveDescent
+from myparser.grammar import Grammar
+from myparser.parser import ParserRecursiveDescent
 
 
 class Main:

@@ -1,10 +1,12 @@
-from typing import Set, Dict
+from typing import Set, Dict, List
+
+from ordered_set import OrderedSet
 
 
 class Grammar:
-    non_terminals: Set[str]
-    terminals: Set[str]
-    productions: Dict[str, Set[str]]
+    non_terminals: OrderedSet[str]
+    terminals: OrderedSet[str]
+    productions: Dict[str, List[List[str]]]
     starting_symbol: str
 
     def __init__(self, non_terminals, terminals, productions, starting_symbol):
@@ -16,13 +18,13 @@ class Grammar:
     @staticmethod
     def parseFile(filename):
         with open(filename, "r") as file:
-            non_terminals = set([nt.strip() for nt in file.readline().strip().split(' ')])
-            terminals = set([nt.strip() for nt in file.readline().strip().split(' ')])
+            non_terminals = OrderedSet([nt.strip() for nt in file.readline().strip().split(' ')])
+            terminals = OrderedSet([nt.strip() for nt in file.readline().strip().split(' ')])
             starting_symbol = file.readline().strip()
             productions = {}
             for line in file:
                 symbol, rules = [el.strip() for el in line.strip().split('->')]
-                rules = set([rule.strip() for rule in rules.split('|')])
+                rules = OrderedSet([rule.strip() for rule in rules.split('|')])
                 # validation
                 for rule in rules:
                     for res in rule.split(' '):
@@ -30,7 +32,7 @@ class Grammar:
                             raise SyntaxError(
                                 "Rule element not present in either terminals or non terminals element:" + res)
                 # if no error add to productions
-                productions[symbol] = rules
+                productions[symbol] = [rule.split(' ') for rule in rules]
             return Grammar(non_terminals, terminals, productions, starting_symbol)
 
     def getNonTerminals(self):
@@ -40,10 +42,7 @@ class Grammar:
         return list(self.terminals)
 
     def getProductions(self):
-        new_dict = {}
-        for x in self.productions.keys():
-            new_dict[x] = list(self.productions[x])
-        return new_dict
+        return self.productions
 
     def getStartingSymbol(self):
         return self.starting_symbol

@@ -1,0 +1,49 @@
+digraph G {
+0[label=<0 S<BR /><FONT POINT-SIZE="10">0</FONT>>]
+1 [label="1 a"]
+0 -> 1
+1 -> 2 [arrowhead="invdot"]
+2[label=<2 S<BR /><FONT POINT-SIZE="10">2</FONT>>]
+0 -> 2
+2 -> 4 [arrowhead="invdot"]
+3 [label="3 c"]
+2 -> 3
+4 [label="4 b"]
+0 -> 4
+4 -> 5 [arrowhead="invdot"]
+5[label=<5 S<BR /><FONT POINT-SIZE="10">0</FONT>>]
+0 -> 5
+6 [label="6 a"]
+5 -> 6
+6 -> 7 [arrowhead="invdot"]
+7[label=<7 S<BR /><FONT POINT-SIZE="10">2</FONT>>]
+5 -> 7
+7 -> 9 [arrowhead="invdot"]
+8 [label="8 c"]
+7 -> 8
+9 [label="9 b"]
+5 -> 9
+9 -> 10 [arrowhead="invdot"]
+10[label=<10 S<BR /><FONT POINT-SIZE="10">0</FONT>>]
+5 -> 10
+11 [label="11 a"]
+10 -> 11
+11 -> 12 [arrowhead="invdot"]
+12[label=<12 S<BR /><FONT POINT-SIZE="10">1</FONT>>]
+10 -> 12
+12 -> 16 [arrowhead="invdot"]
+13 [label="13 a"]
+12 -> 13
+13 -> 14 [arrowhead="invdot"]
+14[label=<14 S<BR /><FONT POINT-SIZE="10">2</FONT>>]
+12 -> 14
+15 [label="15 c"]
+14 -> 15
+16 [label="16 b"]
+10 -> 16
+16 -> 17 [arrowhead="invdot"]
+17[label=<17 S<BR /><FONT POINT-SIZE="10">2</FONT>>]
+10 -> 17
+18 [label="18 c"]
+17 -> 18
+}

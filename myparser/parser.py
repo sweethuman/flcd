@@ -1,12 +1,26 @@
-from typing import Literal
+from typing import Literal, List
 
-from parser.grammar import Grammar
+from myparser.grammar import Grammar
 from domain.language_symbols import symbols
+import graphviz
+
+
+class Node:
+    def __init__(self, value, index):
+        self.index = index
+        self.father = -1
+        self.sibling = -1
+        self.value = value
+        self.production = -1
+
+    def __str__(self):
+        return str(self.value) + " " + str(self.father) + " " + str(self.sibling)
 
 
 class ParserRecursiveDescent:
     grammar: Grammar
     state: Literal["q", "b", "f", "e"]
+    tree: List[Node]
 
     def __init__(self, grammar):
         self.grammar = grammar
@@ -28,7 +42,7 @@ class ParserRecursiveDescent:
         # this probably shouldn't always be 0 but we will see, kinda fucked
         a = list(self.grammar.getProductions()[non_terminal])[0]
 
-        self.input = a.split(" ") + self.input
+        self.input = a + self.input
         if self.debug:
             self.print_parser_step("expand")
 
@@ -46,6 +60,7 @@ class ParserRecursiveDescent:
             self.print_parser_step("momentary_insuccess")
 
     def back(self):
+        # only used for terminals in work list
         # when state is "b" we restore the input
         self.input = [self.work.pop()] + self.input
         self.index -= 1
@@ -60,9 +75,6 @@ class ParserRecursiveDescent:
             self.print_parser_step("success")
 
     def another_try(self):
-        if self.index == 0 and self.work[len(self.work) - 1][0] == self.grammar.getStartingSymbol():
-            self.state = "e"
-            return
 
         (non_terminal, last_prod_index) = self.work.pop()
         productions = self.grammar.getProductions()[non_terminal]
@@ -97,6 +109,8 @@ class ParserRecursiveDescent:
         self.work = []
         self.input = [self.grammar.getStartingSymbol()]
         while self.state != "f" and self.state != "e":
+            if (len(self.input) == 0 and self.index != len(self.words)) or (self.state == "b" and len(self.work) == 0):
+                self.state = "e"
             if self.state == "q":
                 if len(self.input) == 0 and self.index == len(self.words):
                     self.success()
@@ -142,7 +156,7 @@ class ParserRecursiveDescent:
                 string += str(i) + ", "
         print(string)
         string = ""
-        for i in self.word:
+        for i in self.words:
             if type(i) != tuple:
                 string += "\"" + list(self.tokenCodes.keys())[list(self.tokenCodes.values()).index(int(i))] + "\" , "
             else:
@@ -154,10 +168,10 @@ class ParserRecursiveDescent:
 
         for index in range(0, len(work)):
             if type(work[index]) == tuple:
-                self.tree.append(Node(work[index][0]))
+                self.tree.append(Node(work[index][0], index))
                 self.tree[index].production = work[index][1]
             else:
-                self.tree.append(Node(work[index]))
+                self.tree.append(Node(work[index], index))
 
         for index in range(0, len(work)):
             if type(work[index]) == tuple:
@@ -169,7 +183,7 @@ class ParserRecursiveDescent:
                     vectorIndex.append(index + i)
                 for i in range(0, lengthProduction):
                     if self.tree[vectorIndex[i]].production != -1:  # if it is a nonTerminal, compute offset
-                        offset = self.getProductionOffset(vectorIndex[i])
+                        offset = self.get_production_offset(vectorIndex[i])
                         for j in range(i + 1, lengthProduction):
                             vectorIndex[j] += offset
                 for i in range(0, lengthProduction - 1):
@@ -188,22 +202,41 @@ class ParserRecursiveDescent:
         return offset
 
     def write_tree_to_file(self, filename):
-        file = open(filename, "w")
+        source = ""
+        file = open(filename + ".out", "w")
         file.write("index | value | father | sibling\n")
 
         for index in range(0, len(self.work)):
-            file.write(str(index) + " " + str(self.tree[index]) + "\n")
-            print(index, " ", str(self.tree[index]))
-
+            node = self.tree[index]
+            if node.production != -1:
+                source += (str(index) + f"[label=<{index} {node.value}<BR /><FONT POINT-SIZE=\"10\">{node.production}</FONT>>]" + "\n")
+            else:
+                source += (str(index) + " [label=\"" + str(index) + " " + str(node.value) + "\"]" + "\n")
+            if node.father != -1:
+                source += (str(node.father) + " -> " + str(index) + "\n")
+            if node.father == -1:
+                try:
+                    currnode = node
+                    while currnode.father == -1:
+                        currnode = next(x for x in self.tree if x.sibling == currnode.index)
+                    if currnode.father != -1 and currnode != node:
+                        source += (str(currnode.father) + " -> " + str(index) + "\n")
+                except StopIteration:
+                    print("For " + str(index) + " " + str(node) + " indirect father not found.")
+            if node.sibling != -1:
+                source += (str(index) + " -> " + str(node.sibling) + " [arrowhead=\"invdot\"]" + "\n")
+            file.write(str(index) + " " + str(node) + "\n")
+            print(index, " ", str(node))
+        # file.write(source)
         file.close()
+        source = "digraph G {\n" + source + "}"
+        s = graphviz.Source(source)
+        s.render(filename=filename + ".gv", format="png")
 
 
-class Node:
-    def __init__(self, value):
-        self.father = -1
-        self.sibling = -1
-        self.value = value
-        self.production = -1
-
-    def __str__(self):
-        return str(self.value) + " " + str(self.father) + " " + str(self.sibling)
+if __name__ == "__main__":
+    gram = Grammar.parseFile("g1.txt")
+    parser = ParserRecursiveDescent(gram)
+    parser.run(['a', 'c', 'b', 'a', 'c', 'b', 'a', 'a', 'c', 'b', 'c'])
+    parser.parse_tree(parser.work)
+    parser.write_tree_to_file("g1")

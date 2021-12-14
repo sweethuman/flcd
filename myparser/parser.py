@@ -202,36 +202,34 @@ class ParserRecursiveDescent:
         return offset
 
     def write_tree_to_file(self, filename):
-        source = ""
+        graph = graphviz.Digraph()
         file = open(filename + ".out", "w")
         file.write("index | value | father | sibling\n")
 
         for index in range(0, len(self.work)):
             node = self.tree[index]
             if node.production != -1:
-                source += (str(index) + f"[label=<{index} {node.value}<BR /><FONT POINT-SIZE=\"10\">{node.production}</FONT>>]" + "\n")
+                graph.node(str(index),
+                           label=f"<{index} {node.value}<BR /><FONT POINT-SIZE=\"10\">{node.production}</FONT>>")
             else:
-                source += (str(index) + " [label=\"" + str(index) + " " + str(node.value) + "\"]" + "\n")
+                graph.node(str(index), label=str(index) + " " + str(node.value))
             if node.father != -1:
-                source += (str(node.father) + " -> " + str(index) + "\n")
+                graph.edge(str(node.father), str(index))
             if node.father == -1:
                 try:
                     currnode = node
                     while currnode.father == -1:
                         currnode = next(x for x in self.tree if x.sibling == currnode.index)
                     if currnode.father != -1 and currnode != node:
-                        source += (str(currnode.father) + " -> " + str(index)+ " [arrowhead=\"empty\"]" + "\n")
+                        graph.edge(str(currnode.father), str(index), arrowhead="empty")
                 except StopIteration:
                     print("For " + str(index) + " " + str(node) + " indirect father not found.")
             if node.sibling != -1:
-                source += (str(index) + " -> " + str(node.sibling) + " [arrowhead=\"invdot\"]" + "\n")
+                graph.edge(str(index), str(node.sibling), arrowhead="invdot")
             file.write(str(index) + " " + str(node) + "\n")
             print(index, " ", str(node))
-        # file.write(source)
         file.close()
-        source = "digraph G {\n" + source + "}"
-        s = graphviz.Source(source)
-        s.render(filename=filename + ".gv", format="png")
+        graph.render(filename=filename + ".gv", format="png")
 
 
 if __name__ == "__main__":

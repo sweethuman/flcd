@@ -1,4 +1,5 @@
-from typing import Literal, List
+import pprint
+from typing import Literal, List, TextIO
 
 from myparser.grammar import Grammar
 from domain.language_symbols import symbols
@@ -21,6 +22,7 @@ class ParserRecursiveDescent:
     grammar: Grammar
     state: Literal["q", "b", "f", "e"]
     tree: List[Node]
+    file: TextIO
 
     def __init__(self, grammar):
         self.grammar = grammar
@@ -32,7 +34,9 @@ class ParserRecursiveDescent:
         self.symbols = symbols
         self.tree = []
         self.words = []
-        self.debug = False
+        self.debug = True
+        self.file = open("parser.debug.txt", "w")
+        self.file.seek(0)
 
     def expand(self):
         # when top of input non terminal
@@ -135,33 +139,19 @@ class ParserRecursiveDescent:
             print(self.work, self.input, self.index)
 
     def print_parser_step(self, step):
-        print("~~~~~~~~~~~~")
-        print(step)
-        print("iteration: ", self.iteration)
+        pp = pprint.PrettyPrinter(indent=2, stream=self.file)
+        pp.pprint("~~~~~~~~~~~~")
+        pp.pprint(f"Current step: {step}")
+        pp.pprint(f"Iteration: {self.iteration}")
         self.iteration += 1
-        print(self.state)
-        print(self.index)
-        string = ""
-        for i in self.work:
-            if type(i) != tuple:
-                string += "\"" + list(self.tokenCodes.keys())[list(self.tokenCodes.values()).index(int(i))] + "\" , "
-            else:
-                string += str(i) + ", "
-        print(string)
-        string = ""
-        for i in self.input:
-            try:
-                string += "\"" + list(self.tokenCodes.keys())[list(self.tokenCodes.values()).index(int(i))] + "\" , "
-            except:
-                string += str(i) + ", "
-        print(string)
-        string = ""
-        for i in self.words:
-            if type(i) != tuple:
-                string += "\"" + list(self.tokenCodes.keys())[list(self.tokenCodes.values()).index(int(i))] + "\" , "
-            else:
-                string += str(i) + ", "
-        print(string)
+        pp.pprint(f"Current state: {self.state}")
+        pp.pprint(f'Current index: {self.index} {self.words[self.index]}')
+        pp.pprint("Work:")
+        pp.pprint(self.work)
+        pp.pprint("Input:")
+        pp.pprint(self.input)
+        pp.pprint("Words:")
+        pp.pprint(self.words)
 
     def parse_tree(self, work):
         father = -1
@@ -233,8 +223,15 @@ class ParserRecursiveDescent:
 
 
 if __name__ == "__main__":
-    gram = Grammar.parseFile("g1.txt")
-    parser = ParserRecursiveDescent(gram)
-    parser.run(['a', 'c', 'b', 'a', 'c', 'b', 'a', 'a', 'c', 'b', 'c'])
-    parser.parse_tree(parser.work)
-    parser.write_tree_to_file("g1")
+    with open("grammar.debug.txt", "w") as f:
+        f.seek(0)
+        pp = pprint.PrettyPrinter(indent=2, stream=f)
+        gram = Grammar.parseFile("g1.txt")
+        pp.pprint(gram.getNonTerminals())
+        pp.pprint(gram.getTerminals())
+        pp.pprint(gram.getStartingSymbol())
+        pp.pprint(gram.getProductions())
+        parser = ParserRecursiveDescent(gram)
+        parser.run(['a', 'c', 'b', 'a', 'c', 'b', 'a', 'a', 'c', 'b', 'c'])
+        parser.parse_tree(parser.work)
+        parser.write_tree_to_file("g1")

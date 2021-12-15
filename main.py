@@ -1,3 +1,5 @@
+import pprint
+
 from domain.pif import ProgramInternalForm
 from domain.scanner import *
 from domain.symbol_table import SymbolTable
@@ -56,11 +58,18 @@ class Main:
 if __name__ == "__main__":
     main = Main()
     main.run("p1.txt")
-    grammar = Grammar.parseFile("g2.txt")
-    sequence = []
-    for e in main.pif.get_content():
-        sequence.append(str(e[0]))
-    parser = ParserRecursiveDescent(grammar)
-    parser.run(sequence)
-    parser.parse_tree(parser.work)
-    parser.write_tree_to_file("g2")
+    with open("grammar.debug.txt", "w") as f:
+        f.seek(0)
+        pp = pprint.PrettyPrinter(indent=2, stream=f)
+        gram = Grammar.parseFile("g2.txt")
+        pp.pprint(gram.getNonTerminals())
+        pp.pprint(gram.getTerminals())
+        pp.pprint(gram.getStartingSymbol())
+        pp.pprint(gram.getProductions())
+        sequence = []
+        for e in main.pif.get_content():
+            sequence.append(str(e[0]))
+        parser = ParserRecursiveDescent(gram)
+        parser.run(sequence)
+        parser.parse_tree(parser.work)
+        parser.write_tree_to_file("g2")

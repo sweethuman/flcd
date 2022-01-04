@@ -1,0 +1,50 @@
+
+%{ 	 
+#include <math.h>
+#include <string.h>
+#include <stdio.h>
+%}
+
+%option noyywrap
+%option caseless
+
+DIGIT 		[0-9]
+ID 		[a-z][a-z0-9]*
+NOTID   [0-9][a-z0-9]*
+TYPE    (number|string)
+STRING  '.*'
+
+%% 
+
+"if"|"and"|"for"|"else"|"begin"|"or"|"read"|"write"|"while"|"xor"|"array"|"print"  printf( "A keyword: %s\n", yytext );
+
+{TYPE} printf( "A type: %s\n", yytext );
+{STRING} printf( "A string: %s\n", yytext );
+
+-?{DIGIT}+ 	printf( "An integer: %s (%d)\n", yytext, atoi( yytext ) );
+
+{DIGIT}+"."{DIGIT}*  printf( "A float: %s (%g)\n", yytext, atof( yytext ) );
+
+{ID} 		printf( "An identifier: %s\n", yytext );
+
+"{"|"}"|"("|")"|"["|"]"|";"|":" printf( "A separator: %s\n", yytext );
+
+"+"|"-"|"*"|"/"|"%"|"="|"<"|">"|"<="|">="|"=="|"!="|"!" printf( "An operator: %s\n", yytext );
+
+"{"[^}\n]*"}" 		/* eat up one-line comments */
+
+[ \t\n]+ 		/* eat up whitespace */
+		 
+.|{NOTID} printf("Eroare: %s\n", yytext);
+%% 
+main( argc, argv ) 
+int argc; 
+char **argv; 
+{ 
+    ++argv, --argc; /* skip over program name */ 
+    if ( argc > 0 ) 
+    yyin = fopen( argv[0], "r" ); 
+    else 
+    yyin = stdin;
+    yylex(); 
+} 

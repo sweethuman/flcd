@@ -12,9 +12,9 @@ begin{
       }
       }
    if(ok==1){
-    write('prime');
+    print('prime');
    }
  else{
-     write('not prime');
+     print('not prime');
  }
 }

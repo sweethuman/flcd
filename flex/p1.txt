@@ -11,17 +11,7 @@ begin{
    if ( a>b ){
       if (a>c){
           max=a;
-          }
-          }
-   else{
-      if(b>a){
-          if(b>c){
-           max=b;
-           }}}
-   else{
-       if(c>a){
-          if(c>b){
-           max=c;
-           }}}
-   write(max);
-   }
+      };
+   };
+   print(max);
+}
